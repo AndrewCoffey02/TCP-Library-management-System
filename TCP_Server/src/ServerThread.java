@@ -1,0 +1,168 @@
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ServerThread extends Thread {
+
+	private Socket socket;
+	public libraryUsers list;
+	private ObjectOutputStream out;
+	private ObjectInputStream in;
+	private String message = "";
+	private String UserID = "";
+	private int answer = 0;
+	public ServerThread(Socket s, libraryUsers l)
+	{
+		socket = s;
+		list = l;
+	}
+	
+	public void run()
+	{
+		//3. get Input and Output streams
+		try 
+		{
+			out = new ObjectOutputStream(socket.getOutputStream());
+			out.flush();
+			in = new ObjectInputStream(socket.getInputStream());
+			out.writeObject("Welcome to library management system.\n");
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+		try{
+			
+			// Register / Login before entering loop.
+			if (list.ListIsEmpty()) {
+					out.writeObject("3");
+					out.writeObject("It seems that there is no accounts on the database. Please register with the library:");
+
+					registerUser();
+				} else {
+					out.writeObject("0");
+					out.writeObject("Would you like to login or register?:\n"
+							+ "1. Login.\n"
+							+ "2. Register\n"
+							+ "\nenter number:");
+					message = (String)in.readObject();
+					
+					if(message.equals("2")) {
+						registerUser();
+					}
+					else if(message.equals("1")) {
+						loginUser();
+					}
+				}
+			do{
+				out.writeObject("\nPlease enter one of the options:\n"
+								+ "1. View library database\n"
+								+ "2. assign borrow request\n"
+								+ "3. view library records assigned to you\n"
+								+ "4. update password\n\n"
+								+ "enter number:");
+
+				message = (String)in.readObject();
+				
+				if (message.equals("1")) {
+					out.writeObject(list.printList());
+					
+				}
+				else if (message.equals("2")) {
+					System.out.println("");
+				}
+				else {
+					message = "Not a valid number...";
+				}
+			}while(true);
+		}
+		catch(ClassNotFoundException | IOException ioException){
+			return;
+		}
+	}
+	
+	public void sendMessage(String msg)
+	{
+		try{
+			out.writeObject(msg);
+			out.flush();
+			System.out.println(msg);
+			// System.out.println(socket.getInetAddress()+"/"+socket.getPort()+": "+msg);
+		}
+		catch(IOException ioException){
+			ioException.printStackTrace();
+		}
+	}
+	
+	public void registerUser()
+	{
+		try {
+			out.writeObject("Enter a student ID number: ");
+			message = (String)in.readObject();
+			String StudentID = message;
+			
+			out.writeObject("Enter email: ");
+			message = (String)in.readObject();
+			String Email = message;
+			
+			out.writeObject("Enter name: ");
+			message = (String)in.readObject();
+			String Name = message;
+			
+			out.writeObject("Enter occupation: ");
+			message = (String)in.readObject();
+			String Occupation = message;
+			
+			out.writeObject("Enter department: ");
+			message = (String)in.readObject();
+			String Dept = message;
+			
+			out.writeObject("Enter password: ");
+			message = (String)in.readObject();
+			String Password = message;
+			
+			//check for duplicates
+			if(list.checkStudentId(StudentID)) {
+				out.writeObject("Sorry, your studentID is already being used. Please try again\n");
+				return;
+			}
+			else if (list.checkEmail(Email)) {
+				out.writeObject("Sorry, your email is already being used. Please try again\n");
+				return;
+			}
+			
+			//Create new user class
+			User user = new User(Name, StudentID, Email, Password, Dept, Occupation);
+			list.addUser(user);
+			out.writeObject("User has succesfully registered!\n");
+			
+		} catch (ClassNotFoundException | IOException classnot) {
+			return;
+		}
+	}
+	public void loginUser() {
+		try {
+			out.writeObject("Enter email: ");
+			message = (String)in.readObject();
+			String Email = message;
+			
+			out.writeObject("Enter password: ");
+			message = (String)in.readObject();
+			String Password = message;
+			
+			if(list.successfulLogin(Email, Password)) {
+				out.writeObject("Successful login.");
+			}
+			else {
+				out.writeObject("Unsuccessful login, please try again.");
+			}
+			
+		}
+		catch (ClassNotFoundException | IOException classnot) {
+			return;
+		}
+	}
+}

@@ -1,0 +1,102 @@
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
+public class ServerThread extends Thread {
+
+	private Socket socket;
+	private ObjectOutputStream out;
+	private ObjectInputStream in;
+	private libraryUsers l;
+	private String message = "";
+	private int Option = 0;
+	private int answer = 0;
+	public ServerThread(Socket s)
+	{
+		socket = s;
+	}
+	
+	public void run()
+	{
+		l = new libraryUsers();
+		//3. get Input and Output streams
+		try 
+		{
+			out = new ObjectOutputStream(socket.getOutputStream());
+			out.flush();
+			in = new ObjectInputStream(socket.getInputStream());
+			out.writeObject("Welcome to library management system.\n");
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+		//4. Listen to any requests given and echo back
+		try{
+			do{
+				if (l.ListIsEmpty()) {
+					out.writeObject("It seems that there is no accounts on the database. Please register with the library:");
+					registerUser();
+				} else {
+					out.writeObject("Would you like to login or register?:\n"
+							+ "1. Login.\n"
+							+ "2. Register\n"
+							+ "\nenter number:");
+					message = (String)in.readObject();
+				}
+				out.writeObject("Please enter one of the options:\n"
+								+ "1. View library database\n"
+								+ "2. assign borrow request\n"
+								+ "3. view library records assigned to you\n"
+								+ "4. update password\n\n"
+								+ "enter number:");
+				
+				message = (String)in.readObject();
+				
+				if (message.equals("1")) {
+					
+					System.out.println(l.getAll().toString());
+				}
+				else if (message.equals("2")) {
+					Option = 2;
+				}
+				else {
+					message = "Not a valid number...";
+				}
+			}while(true);
+		}
+		catch(ClassNotFoundException | IOException ioException){
+			return;
+		}
+	}
+	
+	public void sendMessage(String msg)
+	{
+		try{
+			out.writeObject(msg);
+			out.flush();
+			System.out.println(msg);
+			// System.out.println(socket.getInetAddress()+"/"+socket.getPort()+": "+msg);
+		}
+		catch(IOException ioException){
+			ioException.printStackTrace();
+		}
+	}
+	
+	public void registerUser()
+	{
+		try {
+			out.writeObject("Enter a student ID number: ");
+			message = (String)in.readObject();
+			
+			out.writeObject("Enter email: ");
+			message = (String)in.readObject();
+			out.flush();
+			
+		} catch (ClassNotFoundException | IOException classnot) {
+			return;
+			
+		}
+	}
+}

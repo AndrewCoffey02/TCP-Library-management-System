@@ -1,0 +1,128 @@
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+
+public class ServerThread extends Thread {
+
+	private Socket socket;
+	private ObjectOutputStream out;
+	private ObjectInputStream in;
+	private libraryUsers libraryList;
+	private String message = "";
+	private String ClientID;
+	private int Option = 0;
+	private int answer = 0;
+	public ServerThread(Socket s)
+	{
+		socket = s;
+	}
+	
+	public void run()
+	{
+		//3. get Input and Output streams
+		try 
+		{
+			out = new ObjectOutputStream(socket.getOutputStream());
+			out.flush();
+			in = new ObjectInputStream(socket.getInputStream());
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+		registerUser();
+		
+		//4. Listen to any requests given and echo back
+			
+		try{
+			do{
+				sendMessage(message+"\nIf you want leave, type 'exit' please.\nPlease enter 1 to add 3 numbers, or 2 to multiply 2 numbers: ");
+				message = (String)in.readObject();
+				
+				if (message.equals("1")) {
+					Option = 1;
+					Calculate();
+				}
+				else if (message.equals("2")) {
+					Option = 2;
+					Calculate();
+				}
+				else {
+					message = "Not a valid number...";
+				}
+			}while(true);
+		}
+		catch(ClassNotFoundException | IOException ioException){
+			System.err.println("Data received in unknown format...");
+		}
+	}
+	
+	public void sendMessage(String msg)
+	{
+		try{
+			out.writeObject(msg);
+			out.flush();
+			System.out.println(ClientID+">"+msg);
+			// System.out.println(socket.getInetAddress()+"/"+socket.getPort()+": "+msg);
+		}
+		catch(IOException ioException){
+			ioException.printStackTrace();
+		}
+	}
+	
+	public void registerUser()
+	{
+		try {
+			out.writeObject("Enter a student ID number: ");
+			message = (String)in.readObject();
+			out.flush();
+			System.out.println(message+" has connected");
+			
+		} catch (ClassNotFoundException | IOException classnot) {
+			System.err.println("Data received in unknown format");
+			
+		}
+	}
+	
+	public void Calculate() {
+		try{
+			sendMessage("Enter first number: ");
+			message = (String)in.readObject();
+			if(message.matches(".*[a-zA-Z].*")) {
+				message = "Number not detected...";
+				Calculate();
+			}
+			int num1 = Integer.parseInt(message);
+			
+			sendMessage("Enter second number: ");
+			message = (String)in.readObject();
+			if(message.matches(".*[a-zA-Z].*")) {
+				message = "Number not detected...";
+				Calculate();
+			}
+			int num2 = Integer.parseInt(message);
+			
+			if (Option == 1) {
+				sendMessage("Enter third number: ");
+				message = (String)in.readObject();
+				if(message.matches(".*[a-zA-Z].*")) {
+					message = "Number not detected...";
+					Calculate();
+				}
+				int num3 = Integer.parseInt(message);
+				answer = num1 + num2 + num3;
+				
+			} else if (Option == 2) {
+				answer = num1 * num2;
+			 
+			}
+			message = "Your answer is "+answer+"\n";
+			
+		}
+		catch(ClassNotFoundException | IOException classnot){
+			System.err.println("Data received in unknown format");
+			
+		}
+	}
+}

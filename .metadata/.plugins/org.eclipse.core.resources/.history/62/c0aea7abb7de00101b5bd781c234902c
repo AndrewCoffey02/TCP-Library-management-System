@@ -1,0 +1,113 @@
+
+import java.io.*;
+import java.net.*;
+import java.util.Scanner;
+import java.net.ConnectException;
+
+public class Requester{
+	Socket requestSocket;
+	ObjectOutputStream out;
+ 	ObjectInputStream in;
+ 	libraryUsers l;
+ 	String message;
+ 	Scanner input;
+ 	String ClientID;
+	Requester(){
+		input = new Scanner(System.in);
+	}
+	void run()
+	{
+		try{
+			l = new libraryUsers();
+			//1. creating a socket to connect to the server
+			requestSocket = new Socket("127.0.0.1", 2004);
+			
+			System.out.println("Succesfully connected to server.");
+			
+			//2. get Input and Output streams
+			out = new ObjectOutputStream(requestSocket.getOutputStream());
+			out.flush();
+			in = new ObjectInputStream(requestSocket.getInputStream());
+			
+			message = (String)in.readObject();
+			System.out.println(message);
+			
+			if (l.ListIsEmpty()) {
+				message = (String)in.readObject();
+				System.out.println(message);
+				registerUser();
+			} else {
+				return;
+			}
+			
+			//4: Communicating with the server
+			do{
+				
+				message = (String)in.readObject();
+				System.out.println(message);
+				System.out.print(ClientID+":");
+				message = input.nextLine();
+				sendMessage(message);
+				
+			}while(!message.equals("exit"));
+			
+		} catch(UnknownHostException unknownHost){
+			System.err.println("You are trying to connect to an unknown host!");
+			
+		} catch (ConnectException noConnection) {
+			System.err.println("No Servers online at the moment...");
+			
+		}
+		catch(ClassNotFoundException | IOException ioException){
+			ioException.printStackTrace();
+		}
+		finally{
+			
+			//4: Closing connection
+			try{
+				in.close();
+				out.close();
+				requestSocket.close();
+			}
+			catch(IOException ioException){
+				ioException.printStackTrace();
+			}
+		}
+	}
+	
+	public void registerUser() {
+		try{
+			message = (String)in.readObject();
+			System.out.print(message);
+			ClientID = input.nextLine();
+			
+			message = (String)in.readObject();
+			System.out.print(message);
+			ClientID = input.nextLine();
+			
+		}
+		catch(ClassNotFoundException | IOException classNot){
+			System.err.println("data received in unknown format");
+			
+		}
+	}
+	
+	void sendMessage(String msg)
+	{
+		try{
+			out.writeObject(msg);
+			out.flush();
+		}
+		catch(IOException ioException){
+			ioException.printStackTrace();
+		}
+	}
+	
+
+	
+	public static void main(String args[])
+	{
+		Requester client = new Requester();
+		client.run();
+	}
+}

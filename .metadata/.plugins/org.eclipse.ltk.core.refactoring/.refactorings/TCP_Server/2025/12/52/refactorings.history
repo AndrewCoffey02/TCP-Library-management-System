@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename method &apos;Requester.CheckStream(...)&apos; to &apos;transactionType&apos;&#x0D;&#x0A;- Original project: &apos;TCP_Server&apos;&#x0D;&#x0A;- Original element: &apos;Requester.CheckStream(...)&apos;&#x0D;&#x0A;- Renamed element: &apos;Requester.transactionType(...)&apos;&#x0D;&#x0A;- Update references to refactored element" delegate="false" deprecate="false" description="Rename method &apos;CheckStream&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.method" input="/src&lt;{Requester.java[Requester~CheckStream~QString;" name="transactionType" references="true" stamp="1766446614815" version="1.0"/>
+</session>

@@ -1,0 +1,140 @@
+
+import java.io.*;
+import java.net.*;
+import java.util.Scanner;
+import java.net.ConnectException;
+
+public class Requester{
+	Socket requestSocket;
+	ObjectOutputStream out;
+ 	ObjectInputStream in;
+ 	libraryUsers list;
+ 	String message;
+ 	Scanner input;
+	public Requester(){
+		input = new Scanner(System.in);
+	}
+	void run()
+	{
+		try{
+			//1. creating a socket to connect to the server
+			requestSocket = new Socket("127.0.0.1", 2004);
+			
+			System.out.println("Succesfully connected to server.");
+			
+			//2. get Input and Output streams
+			out = new ObjectOutputStream(requestSocket.getOutputStream());
+			out.flush();
+			in = new ObjectInputStream(requestSocket.getInputStream());
+			
+			transactionType("receive");
+			//4: Communicating with the server#
+			if(list.ListIsEmpty()) {
+				transactionType("receive");
+				for(int i=0;i < 6;i++) {
+					transactionType("receive-send");
+				}
+				transactionType("receive");
+			}
+			else {
+				transactionType("receive-send");
+			}
+			
+			
+		} catch(UnknownHostException unknownHost){
+			System.err.println("You are trying to connect to an unknown host!");
+			
+		} catch (ConnectException noConnection) {
+			System.err.println("No Servers online at the moment...");
+			
+		}
+		catch(IOException ioException){
+			ioException.printStackTrace();
+		}
+		finally{
+			
+			//4: Closing connection
+			try{
+				in.close();
+				out.close();
+				requestSocket.close();
+			}
+			catch(IOException ioException){
+				ioException.printStackTrace();
+			}
+		}
+	}
+	
+	public void transactionType(String option) {
+		try {
+			System.out.println(option);
+			message = (String)in.readObject();
+			
+			if(option.equals("receive-send")) {
+				System.out.print(message);
+				message = input.nextLine();
+				sendMessage(message);
+			}
+			else if(option.equals("receive")) {
+				System.out.print(message);
+			}
+			else if(option.equals("receive-twice")) {
+				System.out.print(message);
+				message = (String)in.readObject();
+				System.out.print(message);
+			}
+		}
+		catch(ClassNotFoundException | IOException ioException){
+			ioException.printStackTrace();
+		}
+	}
+	
+	public void receive() {
+		try {
+			message = (String)in.readObject();
+			System.out.print(message);
+		}
+		catch(ClassNotFoundException | IOException ioException){
+			ioException.printStackTrace();
+		}
+		
+	}
+	
+	public void receiveAndSend() {
+		try {
+			message = (String)in.readObject();
+			System.out.print(message);
+			message = input.nextLine();
+			sendMessage(message);
+		}
+		catch(ClassNotFoundException | IOException ioException){
+			ioException.printStackTrace();
+		}
+	}
+	
+	public void setComms(String option) {
+		this.Option = option;
+		System.out.println(Option);
+	}
+	
+	public String getComms() {
+		return this.Option;
+	}
+	
+	void sendMessage(String msg)
+	{
+		try{
+			out.writeObject(msg);
+			out.flush();
+		}
+		catch(IOException ioException){
+			ioException.printStackTrace();
+		}
+	}
+	
+	public static void main(String args[])
+	{
+		Requester client = new Requester();
+		client.run();
+	}
+}

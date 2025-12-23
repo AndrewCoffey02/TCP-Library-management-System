@@ -1,0 +1,28 @@
+import java.util.*;
+
+public class libraryUsers {
+	private Map<String, User> usersById = new HashMap<>();
+    private Map<String, User> usersByEmail = new HashMap<>();
+
+    public boolean checkStudentId(String studentId) {
+    	if (usersById.containsKey(studentId)) {
+            return false;
+        }
+    	else {
+    		return true;
+    	}
+    }
+    
+    public boolean checkEmail(String email) {
+    	if (usersByEmail.containsKey(email)) {
+            return false;
+        }
+    	else {
+    		return true;
+    	}
+    }
+
+    public List<User> getAll() {
+        return new ArrayList<>(usersById.values());
+    }
+}
