@@ -88,6 +88,7 @@ public class LibraryLists {
     
     // Print all books.
     public String printBooks() {
+
     	StringBuilder sb = new StringBuilder("\n===== Books =====\n");
 
 	    for (Book book : books) {
@@ -96,8 +97,16 @@ public class LibraryLists {
 
 	    return sb.toString();
     }
+
+    public String FindLibrarian() {
+    	Random r = new Random();
+    	
+    	int num1 = r.nextInt(10);
+    	return "";
+    }
     
     public String assignBorrowRequest(String ID) {
+    	
     	
     	for (Book book : books) {
     		if (book.recordId().equals(ID)) {
