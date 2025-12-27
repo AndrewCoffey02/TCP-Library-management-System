@@ -8,7 +8,7 @@ public class Requester{
 	Socket requestSocket;
 	ObjectOutputStream out;
  	ObjectInputStream in;
- 	libraryUsers list;
+ 	LibraryLists list;
  	String message;
  	Scanner input;
 	public Requester(){
@@ -58,6 +58,22 @@ public class Requester{
 			do {
 				transactionType("receive-send");
 				if(message.equals("1")) {
+					transactionType("receive-send");
+					transactionType("receive");
+				}
+				else if(message.equals("2")) {
+					transactionType("receive");
+				}
+				else if(message.equals("3")) {
+					transactionType("receive");
+				}
+				else if(message.equals("4")) {
+					transactionType("receive");
+				}
+				else if(message.equals("5")) {
+					transactionType("receive");
+				}
+				else {
 					transactionType("receive");
 				}
 				

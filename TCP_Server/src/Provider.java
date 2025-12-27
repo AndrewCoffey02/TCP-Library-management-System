@@ -1,5 +1,7 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Provider{
 	ServerSocket providerSocket;
@@ -8,7 +10,7 @@ public class Provider{
 	ObjectInputStream in;
 	String message;
 	ServerThread s;
-	libraryUsers l;
+	LibraryLists l;
 	Provider(){}
 	void run()
 	{
@@ -16,7 +18,7 @@ public class Provider{
 			//1. creating a server socket
 			providerSocket = new ServerSocket(2004, 10);
 			System.out.println("- server is running.");
-			l = new libraryUsers();
+			l = new LibraryLists();
 			//2. Wait for connection
 			while(true)
 			{

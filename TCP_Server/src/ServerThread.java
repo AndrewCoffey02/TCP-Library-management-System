@@ -8,16 +8,17 @@ import java.util.List;
 public class ServerThread extends Thread {
 
 	private Socket socket;
-	public libraryUsers list;
+	public LibraryLists lists;
+	public Book books;
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
 	private String message = "";
 	private String UserID = "";
 	private int answer = 0;
-	public ServerThread(Socket s, libraryUsers l)
+	public ServerThread(Socket s, LibraryLists l)
 	{
 		socket = s;
-		list = l;
+		lists = l;
 	}
 	
 	public void run()
@@ -37,7 +38,7 @@ public class ServerThread extends Thread {
 		try{
 			
 			// Register / Login before entering loop.
-			if (list.ListIsEmpty()) {
+			if (lists.usersIsEmpty()) {
 					out.writeObject("3");
 					out.writeObject("It seems that there is no accounts on the database. Please register with the library:");
 
@@ -59,23 +60,29 @@ public class ServerThread extends Thread {
 				}
 			do{
 				out.writeObject("\nPlease enter one of the options:\n"
-								+ "1. View library database\n"
-								+ "2. assign borrow request\n"
-								+ "3. view library records assigned to you\n"
-								+ "4. update password\n\n"
+								+ "1. Create book record\n"
+								+ "2. view book list\n"
+								+ "3. assign borrow request(print users)\n"
+								+ "4. view your assigned book records (Librarian only)\n"
+								+ "5. Update password\n\n"
 								+ "enter number:");
 
 				message = (String)in.readObject();
 				
 				if (message.equals("1")) {
-					out.writeObject(list.printList());
-					
+					createBookRecord();
 				}
 				else if (message.equals("2")) {
+					out.writeObject(lists.printBooks());
+				}
+				else if (message.equals("3")) {
+					out.writeObject(lists.printUsers());
+				}
+				else if (message.equals("4")) {
 					System.out.println("");
 				}
 				else {
-					message = "Not a valid number...";
+					out.writeObject("Sorry, that response is invalid.");
 				}
 			}while(true);
 		}
@@ -112,7 +119,7 @@ public class ServerThread extends Thread {
 			message = (String)in.readObject();
 			String Name = message;
 			
-			out.writeObject("Enter occupation: ");
+			out.writeObject("Enter 1 for Student or enter 2 for Librarian: ");
 			message = (String)in.readObject();
 			String Occupation = message;
 			
@@ -124,20 +131,10 @@ public class ServerThread extends Thread {
 			message = (String)in.readObject();
 			String Password = message;
 			
-			//check for duplicates
-			if(list.checkStudentId(StudentID)) {
-				out.writeObject("Sorry, your studentID is already being used. Please try again\n");
-				return;
-			}
-			else if (list.checkEmail(Email)) {
-				out.writeObject("Sorry, your email is already being used. Please try again\n");
-				return;
-			}
+			message = lists.addUser(Name, StudentID, Email, Password, Dept, Occupation);
 			
-			//Create new user class
-			User user = new User(Name, StudentID, Email, Password, Dept, Occupation);
-			list.addUser(user);
-			out.writeObject("User has succesfully registered!\n");
+			UserID = lists.returnStudentID(Email, Password); // Use ID for other functions
+			out.writeObject(message);
 			
 		} catch (ClassNotFoundException | IOException classnot) {
 			return;
@@ -153,8 +150,9 @@ public class ServerThread extends Thread {
 			message = (String)in.readObject();
 			String Password = message;
 			
-			if(list.successfulLogin(Email, Password)) {
+			if(lists.successfulLogin(Email, Password)) {
 				out.writeObject("Successful login.");
+				UserID = lists.returnStudentID(Email, Password);  // Use ID for other functions
 			}
 			else {
 				out.writeObject("Unsuccessful login, please try again.");
@@ -164,5 +162,23 @@ public class ServerThread extends Thread {
 		catch (ClassNotFoundException | IOException classnot) {
 			return;
 		}
+	}
+	
+	public void createBookRecord() {
+		try {
+			out.writeObject("Enter book name: ");
+			message = (String)in.readObject();
+			String name = message;
+			
+			lists.addBook(name, UserID);
+			out.writeObject("book added!");
+		}
+		catch (ClassNotFoundException | IOException classnot) {
+			return;
+		}
+	}
+	
+	public void printBookRecord() {
+		
 	}
 }

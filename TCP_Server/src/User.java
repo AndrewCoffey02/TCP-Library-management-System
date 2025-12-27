@@ -63,10 +63,20 @@ public class User {
     }
 
     public void setRole(String role) {
-        this.role = role;
+    	this.role = role;
+        
     }
     
-    public String contains() {
+    public String printUser() {
+    	if (role.equals("1")) {
+    		role = "Student";
+    	}
+    	else if (role.equals("2")) {
+    		role = "Librarian";
+    	}
+    	else {
+    		role = "None";
+    	}
     	return "Name: " + name +
 	           "\nStudent ID: " + studentId +
 	           "\nEmail: " + email +
