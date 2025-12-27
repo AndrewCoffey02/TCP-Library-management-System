@@ -42,6 +42,7 @@ public class LibraryLists {
     	return false;
     }
     
+    //Return ID using email and password of that student.
     public String returnStudentID(String email, String password) {
     	for (User user : users) {
             if(user.getEmail().equals(email)) {
@@ -80,26 +81,9 @@ public class LibraryLists {
 
 	    return sb.toString();
     }
-    
-    public Book createBook(
-    	    String bookName,
-    	    String studentId
-    	) {
-    		LocalDate localdate = LocalDate.now();
-    		
-    		return new Book(
-    				bookName,
-    				RecordType.NEW_BOOK_ENTRY, 
-    				UUID.randomUUID().toString(), 
-    				localdate, 
-    				studentId,
-    				RecordStatus.AVAILABLE, 
-    				null
-    		);	
-    	}
-    
+
     public void addBook(String name, String ID) {
-    	books.add(createBook(name, ID));
+    	books.add(Book.createBook(name, ID));
     }
     
     // Print all books.
@@ -107,9 +91,20 @@ public class LibraryLists {
     	StringBuilder sb = new StringBuilder("\n===== Books =====\n");
 
 	    for (Book book : books) {
-	        sb.append(book.printBooks()).append("\n");
+	        sb.append(book.printBook()).append("\n");
 	    }
 
 	    return sb.toString();
+    }
+    
+    public String assignBorrowRequest(String ID) {
+    	
+    	for (Book book : books) {
+    		if (book.recordId().equals(ID)) {
+    			return "Book has been requested!";
+    		}
+    	}
+    	return "Book has not been requested...";
+    	
     }
 }

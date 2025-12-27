@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.print.attribute.standard.OutputDeviceAssigned;
+
 public class ServerThread extends Thread {
 
 	private Socket socket;
@@ -62,7 +64,7 @@ public class ServerThread extends Thread {
 				out.writeObject("\nPlease enter one of the options:\n"
 								+ "1. Create book record\n"
 								+ "2. view book list\n"
-								+ "3. assign borrow request(print users)\n"
+								+ "3. assign borrow request\n"
 								+ "4. view your assigned book records (Librarian only)\n"
 								+ "5. Update password\n\n"
 								+ "enter number:");
@@ -76,7 +78,7 @@ public class ServerThread extends Thread {
 					out.writeObject(lists.printBooks());
 				}
 				else if (message.equals("3")) {
-					out.writeObject(lists.printUsers());
+					borrowRequest();
 				}
 				else if (message.equals("4")) {
 					System.out.println("");
@@ -104,8 +106,7 @@ public class ServerThread extends Thread {
 		}
 	}
 	
-	public void registerUser()
-	{
+	public void registerUser() {
 		try {
 			out.writeObject("Enter a student ID number: ");
 			message = (String)in.readObject();
@@ -140,6 +141,7 @@ public class ServerThread extends Thread {
 			return;
 		}
 	}
+	
 	public void loginUser() {
 		try {
 			out.writeObject("Enter email: ");
@@ -178,7 +180,16 @@ public class ServerThread extends Thread {
 		}
 	}
 	
-	public void printBookRecord() {
-		
+	public void borrowRequest() {
+		try {
+			out.writeObject("Enter Record ID: ");
+			message = (String)in.readObject();
+			String ID = message;
+			
+			out.writeObject(lists.assignBorrowRequest(ID));
+		}
+		catch (ClassNotFoundException | IOException classnot) {
+			return;
+		}
 	}
 }

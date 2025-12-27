@@ -65,6 +65,7 @@ public class Requester{
 					transactionType("receive");
 				}
 				else if(message.equals("3")) {
+					transactionType("receive-send");
 					transactionType("receive");
 				}
 				else if(message.equals("4")) {

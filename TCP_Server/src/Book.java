@@ -23,7 +23,7 @@ public record Book(
     String librarianId   // nullable until processed
 ) {
 	
-	public String printBooks() {
+	public String printBook() {
     	return "Book: " + name +
 	           "\nID: " + recordId +
 	           "\nDate added: " + date +
@@ -31,4 +31,36 @@ public record Book(
 	           "\nStatus: " + status +
 	           "\n---------------------------";
     }
+	
+	public static Book createBook(
+    	    String bookName,
+    	    String studentId
+    	) {
+    		LocalDate localdate = LocalDate.now();
+    		
+    		return new Book(
+    				bookName,
+    				RecordType.NEW_BOOK_ENTRY, 
+    				UUID.randomUUID().toString(), 
+    				localdate, 
+    				studentId,
+    				RecordStatus.AVAILABLE, 
+    				null
+    		);	
+    	}
+	
+	public Book assignBookRequest(
+    	    String librarian
+    	) {
+    		
+    		return new Book(
+    				name,
+    				RecordType.BORROW_REQUEST, 
+    				recordId, 
+    				date, 
+    				studentId,
+    				RecordStatus.REQUESTED, 
+    				librarian
+    		);	
+    	}
 }
