@@ -67,7 +67,7 @@ public class ServerThread extends Thread {
 					}
 				} while(true);
 			}
-			
+
 			do{
 				out.writeObject("\nPlease enter one of the options:\n"
 								+ "1. Create book record\n"
@@ -210,7 +210,7 @@ public class ServerThread extends Thread {
 	//print out any assigned requests if the user is a librarian.
 	public void assignedBorrowRequests() {
 		try {
-			out.writeObject(lists.printRequests(UserID));
+			out.writeObject(lists.assignedToLibrarian(UserID));
 		}
 		catch (IOException classnot) {
 			return;
@@ -226,7 +226,7 @@ public class ServerThread extends Thread {
 				message = (String)in.readObject();
 				String ID = message;
 				
-				String res = lists.checkProcess(message);
+				String res = lists.processLibrarian(message);
 				if(res.equals("1")) {
 					out.writeObject("1");
 					out.writeObject("Would you like to verify the book borrow?(yes/no): ");
@@ -246,7 +246,7 @@ public class ServerThread extends Thread {
 					out.writeObject("Book has been processed.");
 				}
 				else {
-					out.writeObject("returned to home screen.");
+					out.writeObject("Returned to home screen.");
 				}
 			}
 			else if(message.equals("no")) {

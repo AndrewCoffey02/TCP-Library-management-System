@@ -27,7 +27,6 @@ public record Book(
     	return "Book: " + name +
 	           "\nID: " + recordId +
 	           "\nDate added: " + date +
-	           "\nCreated by: " + userId +
 	           "\nStatus: " + status +
 	           "\n---------------------------";
     }
@@ -75,7 +74,7 @@ public record Book(
 		);
 	}
 	
-	public Book bookReturn() {
+	public Book bookAvailable() {
 		return new Book(
 				name,
 				RecordType.NEW_BOOK_ENTRY, 
@@ -84,6 +83,17 @@ public record Book(
 				userId,
 				RecordStatus.AVAILABLE, 
 				null
+		);
+	}
+	public Book bookReturn() {
+		return new Book(
+				name,
+				RecordType.NEW_BOOK_ENTRY, 
+				recordId, 
+				date, 
+				userId,
+				RecordStatus.RETURNED, 
+				librarianId
 		);
 	}
 }

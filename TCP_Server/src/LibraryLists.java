@@ -163,6 +163,9 @@ public class LibraryLists {
     	if(currentBook.status() == RecordStatus.REQUESTED) {
     		return "Sorry, that book is already requested.";
     	}
+    	if(currentBook.status() == RecordStatus.RETURNED) {
+    		return "Sorry, that book has not fully been returned yet.";
+    	}
 		// Verify successful request.
     	int index = books.indexOf(currentBook);
 		books.set(index, currentBook.assignBookRequest(id));
@@ -170,7 +173,7 @@ public class LibraryLists {
     }
     
     //Print all requests assigned to the requested ID.
-    public String printRequests(String id) {
+    public String assignedToLibrarian(String id) {
     	StringBuilder sb = new StringBuilder("\n===== Books assigned to you =====\n");
     	
     	for(Book book : books) {
@@ -181,7 +184,19 @@ public class LibraryLists {
     	return sb.toString();
     }
     
-    public String checkProcess(String ID) {
+    public String assignedToStudent(String id) {
+    	StringBuilder sb = new StringBuilder("\n===== Books assigned to you =====\n");
+    	
+    	for(Book book : books) {
+    		if(book.userId() == id) {
+    			if(book.status() == RecordStatus.BORROWED)
+    			sb.append(book.printBook()).append("\n");
+    		}
+    	}
+    	return sb.toString();
+    }
+    
+    public String processLibrarian(String ID) {
     	Book currentBook = null;
     	for (Book book : books ) {
     		if (book.recordId().equals(ID)) {
@@ -194,10 +209,12 @@ public class LibraryLists {
     	if(currentBook.status() == RecordStatus.REQUESTED) {
 			return "1";
 		}
-    	
-    	if(currentBook.status() == RecordStatus.BORROWED) {
+    	if(currentBook.status() == RecordStatus.RETURNED) {
     		return "2";
 		}
+    	if(currentBook.status() == RecordStatus.BORROWED) {
+    		return "3";
+    	}
     	
     	return "";
     }
@@ -213,10 +230,13 @@ public class LibraryLists {
 			int index = books.indexOf(currentBook);
 			books.set(index, currentBook.bookBorrow());
 		}
-    	
     	if(currentBook.status() == RecordStatus.BORROWED) {
 			int index = books.indexOf(currentBook);
 			books.set(index, currentBook.bookReturn());
+		}
+    	if(currentBook.status() == RecordStatus.RETURNED) {
+			int index = books.indexOf(currentBook);
+			books.set(index, currentBook.bookAvailable());
 		}
     	return "Book has been processed.";
     }
