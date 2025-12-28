@@ -1,15 +1,20 @@
 
+enum UserRole{
+		STUDENT,
+		LIBRARIAN
+}
+
 public class User {
     private String name;
-    private String studentId;   // must be unique
+    private String userId;   // must be unique
     private String email;       // must be unique
     private String password;
     private String department;
-    private String role;
+    private UserRole role;
 
-    public User(String name, String studentId, String email, String password, String department, String role) {
+    public User(String name, String userId, String email, String password, String department, UserRole role) {
         this.name = name;
-        this.studentId = studentId;
+        this.userId = userId;
         this.email = email;
         this.password = password;
         this.department = department;
@@ -21,8 +26,8 @@ public class User {
         return name;
     }
 
-    public String getStudentId() {
-        return studentId;
+    public String getUserId() {
+        return userId;
     }
 
     public String getEmail() {
@@ -37,7 +42,7 @@ public class User {
         return department;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
@@ -46,8 +51,8 @@ public class User {
         this.name = name;
     }
 
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
+    public void setStudentId(String userId) {
+        this.userId = userId;
     }
 
     public void setEmail(String email) {
@@ -62,23 +67,14 @@ public class User {
         this.department = department;
     }
 
-    public void setRole(String role) {
+    public void setRole(UserRole role) {
     	this.role = role;
         
     }
     
     public String printUser() {
-    	if (role.equals("1")) {
-    		role = "Student";
-    	}
-    	else if (role.equals("2")) {
-    		role = "Librarian";
-    	}
-    	else {
-    		role = "None";
-    	}
     	return "Name: " + name +
-	           "\nStudent ID: " + studentId +
+	           "\nStudent ID: " + userId +
 	           "\nEmail: " + email +
 	           "\nDepartment: " + department +
 	           "\nRole: " + role +

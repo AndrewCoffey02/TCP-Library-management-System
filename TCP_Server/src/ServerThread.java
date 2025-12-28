@@ -41,12 +41,14 @@ public class ServerThread extends Thread {
 			
 			// Register / Login before entering loop.
 			if (lists.usersIsEmpty()) {
-					out.writeObject("3");
-					out.writeObject("It seems that there is no accounts on the database. Please register with the library:");
-
-					registerUser();
-				} else {
-					out.writeObject("0");
+				out.writeObject("3");
+				out.writeObject("It seems that there is no accounts on the database. "
+								+ "Please register with the library:");
+				registerUser();
+			} 
+			else {
+				out.writeObject("0");
+				do {
 					out.writeObject("Would you like to login or register?:\n"
 							+ "1. Login.\n"
 							+ "2. Register\n"
@@ -55,11 +57,18 @@ public class ServerThread extends Thread {
 					
 					if(message.equals("2")) {
 						registerUser();
+						break;
 					}
 					else if(message.equals("1")) {
 						loginUser();
+						break;
 					}
-				}
+					else {
+						out.writeObject("Invalid response, try again.");
+					}
+				} while(true);
+			}
+			
 			do{
 				out.writeObject("\nPlease enter one of the options:\n"
 								+ "1. Create book record\n"
@@ -81,7 +90,13 @@ public class ServerThread extends Thread {
 					borrowRequest();
 				}
 				else if (message.equals("4")) {
-					System.out.println("");
+					assignedBorrowRequests();
+				}
+				else if (message.equals("5")) {
+					out.writeObject("null");
+				}
+				else if (message.equals("6")) {
+					out.writeObject(lists.printUsers());
 				}
 				else {
 					out.writeObject("Sorry, that response is invalid.");
@@ -134,7 +149,7 @@ public class ServerThread extends Thread {
 			
 			message = lists.addUser(Name, StudentID, Email, Password, Dept, Occupation);
 			
-			UserID = lists.returnStudentID(Email, Password); // Use ID for other functions
+			UserID = lists.returnUserID(Email, Password); // Use ID for other functions
 			out.writeObject(message);
 			
 		} catch (ClassNotFoundException | IOException classnot) {
@@ -154,7 +169,7 @@ public class ServerThread extends Thread {
 			
 			if(lists.successfulLogin(Email, Password)) {
 				out.writeObject("Successful login.");
-				UserID = lists.returnStudentID(Email, Password);  // Use ID for other functions
+				UserID = lists.returnUserID(Email, Password);  // Use ID for other functions
 			}
 			else {
 				out.writeObject("Unsuccessful login, please try again.");
@@ -165,7 +180,6 @@ public class ServerThread extends Thread {
 			return;
 		}
 	}
-	
 	public void createBookRecord() {
 		try {
 			out.writeObject("Enter book name: ");
@@ -180,6 +194,7 @@ public class ServerThread extends Thread {
 		}
 	}
 	
+	// Input correct book ID to assign to librarian.
 	public void borrowRequest() {
 		try {
 			out.writeObject("Enter Record ID: ");
@@ -187,6 +202,41 @@ public class ServerThread extends Thread {
 			String ID = message;
 			
 			out.writeObject(lists.assignBorrowRequest(ID));
+		}
+		catch (ClassNotFoundException | IOException classnot) {
+			return;
+		}
+	}
+	
+	//print out any assigned requests if the user is a librarian.
+	public void assignedBorrowRequests() {
+		try {
+			out.writeObject(lists.printRequests(UserID));
+		}
+		catch (IOException classnot) {
+			return;
+		}
+	}
+	public void processRequest() {
+		try {
+			out.writeObject("Would you like to process a book?(yes/no): ");
+			message = (String)in.readObject();
+			
+			if(message.equals("yes")) {
+				out.writeObject("Enter Record ID: ");
+				message = (String)in.readObject();
+				String ID = message;
+				
+				out.writeObject(lists.checkProcess(ID));
+				
+				
+			}
+			else if(message.equals("no")) {
+				out.writeObject("Ok.");
+			}
+			else {
+				out.writeObject("Sorry that is an invalid response...");
+			}
 		}
 		catch (ClassNotFoundException | IOException classnot) {
 			return;

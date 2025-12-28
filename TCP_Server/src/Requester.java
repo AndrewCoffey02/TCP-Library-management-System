@@ -40,18 +40,26 @@ public class Requester{
 				}
 			}
 			else if(message.equals("0")) {
-				transactionType("receive-send");
-				if(message.equals("2")) {
-					for(int i=0;i < 6;i++) {
-						transactionType("receive-send");
+				
+				do {
+					transactionType("receive-send");
+					if(message.equals("2")) {
+						for(int i=0;i < 6;i++) {
+							transactionType("receive-send");
+						}
+						break;
 					}
-				}
-				else if(message.equals("1")) {
-					for(int i=0;i < 2;i++) {
-						transactionType("receive-send");
+					else if(message.equals("1")) {
+						for(int i=0;i < 2;i++) {
+							transactionType("receive-send");
+							
+						}
+						break;
 					}
-				}
-			
+					else {
+						transactionType("receive");
+					}
+				}while(true);
 			}
 			transactionType("receive");
 			
@@ -72,6 +80,9 @@ public class Requester{
 					transactionType("receive");
 				}
 				else if(message.equals("5")) {
+					transactionType("receive");
+				}
+				else if(message.equals("6")) {
 					transactionType("receive");
 				}
 				else {

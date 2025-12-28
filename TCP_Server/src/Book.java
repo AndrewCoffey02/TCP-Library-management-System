@@ -18,7 +18,7 @@ public record Book(
 	RecordType recordType,
     String recordId,
     LocalDate date,
-    String studentId,
+    String userId,
     RecordStatus status,
     String librarianId   // nullable until processed
 ) {
@@ -27,7 +27,7 @@ public record Book(
     	return "Book: " + name +
 	           "\nID: " + recordId +
 	           "\nDate added: " + date +
-	           "\nCreated by: " + studentId +
+	           "\nCreated by: " + userId +
 	           "\nStatus: " + status +
 	           "\n---------------------------";
     }
@@ -52,15 +52,38 @@ public record Book(
 	public Book assignBookRequest(
     	    String librarian
     	) {
-    		
     		return new Book(
     				name,
     				RecordType.BORROW_REQUEST, 
     				recordId, 
     				date, 
-    				studentId,
+    				userId,
     				RecordStatus.REQUESTED, 
     				librarian
     		);	
     	}
+	
+	public Book bookBorrow() {
+		return new Book(
+				name,
+				RecordType.BORROW_REQUEST, 
+				recordId, 
+				date, 
+				userId,
+				RecordStatus.BORROWED, 
+				librarianId
+		);
+	}
+	
+	public Book bookReturn() {
+		return new Book(
+				name,
+				RecordType.NEW_BOOK_ENTRY, 
+				recordId, 
+				date, 
+				userId,
+				RecordStatus.AVAILABLE, 
+				null
+		);
+	}
 }
