@@ -11,7 +11,6 @@ public class ServerThread extends Thread {
 
 	private Socket socket;
 	public LibraryLists lists;
-	public Book books;
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
 	private String message = "";
@@ -93,7 +92,7 @@ public class ServerThread extends Thread {
 					assignedBorrowRequests();
 				}
 				else if (message.equals("5")) {
-					out.writeObject("null");
+					processRequest();
 				}
 				else if (message.equals("6")) {
 					out.writeObject(lists.printUsers());
@@ -227,9 +226,28 @@ public class ServerThread extends Thread {
 				message = (String)in.readObject();
 				String ID = message;
 				
-				out.writeObject(lists.checkProcess(ID));
-				
-				
+				String res = lists.checkProcess(message);
+				if(res.equals("1")) {
+					out.writeObject("1");
+					out.writeObject("Would you like to verify the book borrow?(yes/no): ");
+					message = (String)in.readObject();
+				}
+				else if(res.equals("2")) {
+					out.writeObject("2");
+					out.writeObject("Would you like to verify the return?(yes/no): ");
+					message = (String)in.readObject();
+				}
+				else {
+					out.writeObject("Sorry, this is an invalid record ID. Please start again.");
+					return;
+				}
+				if(message.equals("yes")) {
+					lists.authoriseProcess(ID);
+					out.writeObject("Book has been processed.");
+				}
+				else {
+					out.writeObject("returned to home screen.");
+				}
 			}
 			else if(message.equals("no")) {
 				out.writeObject("Ok.");

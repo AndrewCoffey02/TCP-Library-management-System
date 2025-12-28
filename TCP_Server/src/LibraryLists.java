@@ -145,7 +145,7 @@ public class LibraryLists {
     public String assignBorrowRequest(String ID) {
     	Book currentBook = null;
     	String id = findLibrarian();
-    	if (!id.equals("None")) { //Check for any librarians on the system.
+    	if (id.equals("None")) { //Check for any librarians on the system.
     		return "Sorry, there are no librarians on the system.";
     	}
     	
@@ -189,20 +189,26 @@ public class LibraryLists {
     		}
     	}
     	if(currentBook == null) {
-    		return "Sorry, that record ID is not on this system.";
+    		return "9";
     	}
     	if(currentBook.status() == RecordStatus.REQUESTED) {
-			return "This book has been requested, would you like to verify it?: ";
+			return "1";
 		}
     	
     	if(currentBook.status() == RecordStatus.BORROWED) {
-    		return "This book has been borrowed, would you like to return it?: ";
+    		return "2";
 		}
     	
     	return "";
     }
     
-    public String authoriseProcess(Book currentBook) {
+    public String authoriseProcess(String ID) {
+    	Book currentBook = null;
+    	for (Book book : books ) {
+    		if (book.recordId().equals(ID)) {
+    			currentBook = book;
+    		}
+    	}
     	if(currentBook.status() == RecordStatus.REQUESTED) {
 			int index = books.indexOf(currentBook);
 			books.set(index, currentBook.bookBorrow());

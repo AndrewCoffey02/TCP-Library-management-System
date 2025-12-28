@@ -80,7 +80,13 @@ public class Requester{
 					transactionType("receive");
 				}
 				else if(message.equals("5")) {
-					transactionType("receive");
+					transactionType("receive-send");
+					if(message.equals("yes")) {
+						processRequest();
+					}
+					else {
+						transactionType("receive");
+					}
 				}
 				else if(message.equals("6")) {
 					transactionType("receive");
@@ -116,6 +122,19 @@ public class Requester{
 		}
 	}
 	
+	public void processRequest() {
+		transactionType("receive-send");
+		if(message.equals("1")) {
+			transactionType("receive-send");
+		}
+		else if(message.equals("yes")) {
+			transactionType("receive-send");
+		}
+		else {
+			transactionType("receive");
+		}
+	}
+	
 	public void transactionType(String option) {
 		try {
 			message = (String)in.readObject();
@@ -143,36 +162,12 @@ public class Requester{
 				System.out.println("Unknown type found.");
 				return;
 			}
-			
 		}
 		catch(ClassNotFoundException | IOException ioException){
 			ioException.printStackTrace();
 		}
 	}
-	
-	public void receive() {
-		try {
-			message = (String)in.readObject();
-			System.out.print(message);
-		}
-		catch(ClassNotFoundException | IOException ioException){
-			ioException.printStackTrace();
-		}
-		
-	}
-	
-	public void receiveAndSend() {
-		try {
-			message = (String)in.readObject();
-			System.out.print(message);
-			message = input.nextLine();
-			sendMessage(message);
-		}
-		catch(ClassNotFoundException | IOException ioException){
-			ioException.printStackTrace();
-		}
-	}
-	
+
 	void sendMessage(String msg)
 	{
 		try{
