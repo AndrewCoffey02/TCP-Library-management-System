@@ -210,7 +210,17 @@ public class ServerThread extends Thread {
 	//print out any assigned requests if the user is a librarian.
 	public void assignedBorrowRequests() {
 		try {
-			out.writeObject(lists.assignedToLibrarian(UserID));
+			UserRole role = lists.checkUserRole(UserID);
+			
+			if(role == UserRole.STUDENT) {
+				out.writeObject(lists.assignedToStudent(UserID));
+			}
+			else if(role == UserRole.LIBRARIAN) {
+				out.writeObject(lists.assignedToLibrarian(UserID));
+			}
+			else {
+				out.writeObject("Error, user not found...");
+			}
 		}
 		catch (IOException classnot) {
 			return;

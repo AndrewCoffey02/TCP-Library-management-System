@@ -131,14 +131,14 @@ public class LibraryLists {
     }
     
     // Verify if user ID has a librarian role.
-    public boolean checkLibrarian(String userId) {
+    public UserRole checkUserRole(String userId) {
     	
     	for (User user : users ) {
-    		if(user.getRole() == UserRole.LIBRARIAN) {
-    			return true;
+    		if(user.getUserId().equals(userId)) {
+    			return user.getRole();
     		}
     	}
-    	return false;
+    	return null;
     }
     
     // assign a book to a random librarian.
