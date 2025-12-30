@@ -70,30 +70,31 @@ public record Book(
 				date, 
 				userId,
 				RecordStatus.BORROWED, 
-				librarianId
-		);
-	}
-	
-	public Book bookAvailable() {
-		return new Book(
-				name,
-				RecordType.NEW_BOOK_ENTRY, 
-				recordId, 
-				date, 
-				userId,
-				RecordStatus.AVAILABLE, 
 				null
 		);
 	}
-	public Book bookReturn() {
+	public Book bookReturn(
+			String librarianId
+		) {
 		return new Book(
 				name,
-				RecordType.NEW_BOOK_ENTRY, 
+				RecordType.BORROW_REQUEST, 
 				recordId, 
 				date, 
 				userId,
 				RecordStatus.RETURNED, 
 				librarianId
+		);
+	}
+	public Book bookAvailable() {
+		return new Book(
+				name,
+				RecordType.BORROW_REQUEST, 
+				recordId, 
+				date, 
+				userId,
+				RecordStatus.AVAILABLE, 
+				null
 		);
 	}
 }

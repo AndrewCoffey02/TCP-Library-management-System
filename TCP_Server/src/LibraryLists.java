@@ -203,20 +203,30 @@ public class LibraryLists {
     			currentBook = book;
     		}
     	}
-    	if(currentBook == null) {
-    		return "9";
-    	}
     	if(currentBook.status() == RecordStatus.REQUESTED) {
 			return "1";
 		}
     	if(currentBook.status() == RecordStatus.RETURNED) {
-    		return "2";
-		}
-    	if(currentBook.status() == RecordStatus.BORROWED) {
     		return "3";
     	}
-    	
-    	return "";
+    	else {
+    		return "";
+    	}
+    }
+    
+    public String processStudent(String ID) {
+    	Book currentBook = null;
+    	for (Book book : books ) {
+    		if (book.recordId().equals(ID)) {
+    			currentBook = book;
+    		}
+    	}
+    	if(currentBook.status() == RecordStatus.BORROWED) {
+    		return "2";
+		}
+    	else {
+    		return "";
+    	}
     }
     
     public String authoriseProcess(String ID) {
@@ -226,15 +236,16 @@ public class LibraryLists {
     			currentBook = book;
     		}
     	}
-    	if(currentBook.status() == RecordStatus.REQUESTED) {
+    	if(currentBook.status() == RecordStatus.REQUESTED) {  // Change to borrowed
 			int index = books.indexOf(currentBook);
 			books.set(index, currentBook.bookBorrow());
 		}
-    	if(currentBook.status() == RecordStatus.BORROWED) {
+    	if(currentBook.status() == RecordStatus.BORROWED) {  // Search for librarian id then change to returned.
+    		String libID = findLibrarian();
 			int index = books.indexOf(currentBook);
-			books.set(index, currentBook.bookReturn());
+			books.set(index, currentBook.bookReturn(libID));
 		}
-    	if(currentBook.status() == RecordStatus.RETURNED) {
+    	if(currentBook.status() == RecordStatus.RETURNED) {  // Change to Available.
 			int index = books.indexOf(currentBook);
 			books.set(index, currentBook.bookAvailable());
 		}

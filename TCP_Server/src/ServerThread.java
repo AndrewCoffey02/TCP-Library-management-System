@@ -71,10 +71,12 @@ public class ServerThread extends Thread {
 			do{
 				out.writeObject("\nPlease enter one of the options:\n"
 								+ "1. Create book record\n"
-								+ "2. view book list\n"
-								+ "3. assign borrow request\n"
-								+ "4. view your assigned book records (Librarian only)\n"
-								+ "5. Update password\n\n"
+								+ "2. View book list\n"
+								+ "3. Borrow request\n"
+								+ "4. View your assigned book records\n"
+								+ "5. Process a request\n"
+								+ "6. List users\n"
+								+ "7. Update password\n\n"
 								+ "enter number:");
 
 				message = (String)in.readObject();
@@ -96,6 +98,9 @@ public class ServerThread extends Thread {
 				}
 				else if (message.equals("6")) {
 					out.writeObject(lists.printUsers());
+				}
+				else if (message.equals("7")) {
+					updatePassword();
 				}
 				else {
 					out.writeObject("Sorry, that response is invalid.");
@@ -228,6 +233,9 @@ public class ServerThread extends Thread {
 	}
 	public void processRequest() {
 		try {
+			UserRole role = lists.checkUserRole(UserID);
+			String res = "";
+			
 			out.writeObject("Would you like to process a book?(yes/no): ");
 			message = (String)in.readObject();
 			
@@ -236,7 +244,13 @@ public class ServerThread extends Thread {
 				message = (String)in.readObject();
 				String ID = message;
 				
-				String res = lists.processLibrarian(message);
+				if(role == UserRole.STUDENT) {
+					res = lists.processStudent(message);
+				}
+				else if(role == UserRole.LIBRARIAN) {
+					res = lists.processLibrarian(message);
+				}
+				
 				if(res.equals("1")) {
 					out.writeObject("1");
 					out.writeObject("Would you like to verify the book borrow?(yes/no): ");
@@ -244,13 +258,19 @@ public class ServerThread extends Thread {
 				}
 				else if(res.equals("2")) {
 					out.writeObject("2");
-					out.writeObject("Would you like to verify the return?(yes/no): ");
+					out.writeObject("Are you sure you want to return this book?(yes/no): ");
+					message = (String)in.readObject();
+				}
+				else if(res.equals("3")) {
+					out.writeObject("3");
+					out.writeObject("Would you like to verify the book return?(yes/no): ");
 					message = (String)in.readObject();
 				}
 				else {
-					out.writeObject("Sorry, this is an invalid record ID. Please start again.");
+					out.writeObject("Sorry, this book is not assigned to you. Please try again..");
 					return;
 				}
+				//Verify book process and return to home.
 				if(message.equals("yes")) {
 					lists.authoriseProcess(ID);
 					out.writeObject("Book has been processed.");
@@ -260,7 +280,7 @@ public class ServerThread extends Thread {
 				}
 			}
 			else if(message.equals("no")) {
-				out.writeObject("Ok.");
+				out.writeObject("Returned to home screen.");
 			}
 			else {
 				out.writeObject("Sorry that is an invalid response...");
