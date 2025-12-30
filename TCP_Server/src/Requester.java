@@ -89,6 +89,7 @@ public class Requester{
 					}
 				}
 				else if(message.equals("6")) {
+					transactionType("receive-send");
 					transactionType("receive");
 				}
 				else {

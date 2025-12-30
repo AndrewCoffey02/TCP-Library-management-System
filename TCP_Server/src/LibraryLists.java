@@ -251,4 +251,16 @@ public class LibraryLists {
 		}
     	return "Book has been processed.";
     }
+    
+    public String updatePassword(String ID, String password) {
+    	
+    	for(User user : users) {
+    		if(user.getUserId() == ID) {
+    			user.setPassword(password);
+    			return "Password changed!";
+    		}
+    	}
+    	
+    	return "Sorry, user not recognised.";
+    }
 }

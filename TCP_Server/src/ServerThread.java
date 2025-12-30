@@ -290,4 +290,18 @@ public class ServerThread extends Thread {
 			return;
 		}
 	}
+	
+	public void updatePassword() {
+		
+		try { 
+			out.writeObject("Enter new password: ");
+			message = (String)in.readObject();
+			String pw = message;
+			
+			out.writeObject(lists.updatePassword(UserID, pw));
+		}
+		catch (ClassNotFoundException | IOException classnot) {
+			return;
+		}
+	}
 }
