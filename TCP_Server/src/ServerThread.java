@@ -11,11 +11,11 @@ public class ServerThread extends Thread {
 
 	private Socket socket;
 	public LibraryLists lists;
+	public boolean Authenticated = false;
 	private ObjectOutputStream out;
 	private ObjectInputStream in;
 	private String message = "";
 	private String UserID = "";
-	private int answer = 0;
 	public ServerThread(Socket s, LibraryLists l)
 	{
 		socket = s;
@@ -37,17 +37,16 @@ public class ServerThread extends Thread {
 			e.printStackTrace();
 		}
 		try{
-			
+			do {
 			// Register / Login before entering loop.
-			if (lists.usersIsEmpty()) {
-				out.writeObject("3");
-				out.writeObject("It seems that there is no accounts on the database. "
-								+ "Please register with the library:");
-				registerUser();
-			} 
-			else {
-				out.writeObject("0");
-				do {
+				if (lists.usersIsEmpty()) {
+					out.writeObject("3");
+					out.writeObject("It seems that there is no accounts on the database. "
+									+ "Please register with the library:");
+					registerUser();
+				} 
+				else {
+					out.writeObject("0");
 					out.writeObject("Would you like to login or register?:\n"
 							+ "1. Login.\n"
 							+ "2. Register\n"
@@ -56,18 +55,23 @@ public class ServerThread extends Thread {
 					
 					if(message.equals("2")) {
 						registerUser();
-						break;
 					}
 					else if(message.equals("1")) {
 						loginUser();
-						break;
 					}
 					else {
 						out.writeObject("Invalid response, try again.");
 					}
-				} while(true);
-			}
-
+				}
+				if(Authenticated) {
+					out.writeObject("1");
+					break;
+				}
+				else {
+					out.writeObject("");
+				}
+			} while(true);
+			
 			do{
 				out.writeObject("\nPlease enter one of the options:\n"
 								+ "1. Create book record\n"
@@ -76,7 +80,8 @@ public class ServerThread extends Thread {
 								+ "4. View your assigned book records\n"
 								+ "5. Process a request\n"
 								+ "6. List users\n"
-								+ "7. Update password\n\n"
+								+ "7. Update password\n"
+								+ "8. Exit\n\n"
 								+ "enter number:");
 
 				message = (String)in.readObject();
@@ -101,6 +106,10 @@ public class ServerThread extends Thread {
 				}
 				else if (message.equals("7")) {
 					updatePassword();
+				}
+				else if(message.equals("8")) {
+					out.writeObject("Exiting...");
+					break;
 				}
 				else {
 					out.writeObject("Sorry, that response is invalid.");
@@ -152,8 +161,13 @@ public class ServerThread extends Thread {
 			String Password = message;
 			
 			message = lists.addUser(Name, StudentID, Email, Password, Dept, Occupation);
+			if(message.equals("1")) {
+				Authenticated = true;
+				UserID = lists.returnUserID(Email, Password); // Use ID for other functions
+				out.writeObject("You have succesfully been registered!");
+				return;
+			}
 			
-			UserID = lists.returnUserID(Email, Password); // Use ID for other functions
 			out.writeObject(message);
 			
 		} catch (ClassNotFoundException | IOException classnot) {
@@ -174,6 +188,7 @@ public class ServerThread extends Thread {
 			if(lists.successfulLogin(Email, Password)) {
 				out.writeObject("Successful login.");
 				UserID = lists.returnUserID(Email, Password);  // Use ID for other functions
+				Authenticated = true;
 			}
 			else {
 				out.writeObject("Unsuccessful login, please try again.");
@@ -205,7 +220,7 @@ public class ServerThread extends Thread {
 			message = (String)in.readObject();
 			String ID = message;
 			
-			out.writeObject(lists.assignBorrowRequest(ID));
+			out.writeObject(lists.assignBorrowRequest(ID, UserID));
 		}
 		catch (ClassNotFoundException | IOException classnot) {
 			return;

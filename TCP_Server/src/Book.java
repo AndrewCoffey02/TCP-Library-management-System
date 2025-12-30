@@ -49,7 +49,8 @@ public record Book(
     	}
 	
 	public Book assignBookRequest(
-    	    String librarian
+    	    String librarian,
+    	    String userId
     	) {
     		return new Book(
     				name,
@@ -62,9 +63,7 @@ public record Book(
     		);	
     	}
 	
-	public Book bookBorrow(
-			String userId
-			) {
+	public Book bookBorrow() {
 		return new Book(
 				name,
 				RecordType.BORROW_REQUEST, 
@@ -72,7 +71,7 @@ public record Book(
 				date, 
 				userId,
 				RecordStatus.BORROWED, 
-				librarianId
+				null
 		);
 	}
 	public Book bookReturn(

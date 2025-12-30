@@ -31,37 +31,40 @@ public class Requester{
 			transactionType("receive");
 			
 			//Communicating with the server
-			transactionType("read");
 			
-			if(message.equals("3")) {
-				transactionType("receive");
-				for(int i=0;i < 6;i++) {
-					transactionType("receive-send");
+			do {
+				transactionType("read");
+				if(message.equals("3")) {
+					transactionType("receive");
+					for(int i=0;i < 6;i++) {
+						transactionType("receive-send");
+					}
 				}
-			}
-			else if(message.equals("0")) {
-				
-				do {
+				else if(message.equals("0")) {
 					transactionType("receive-send");
 					if(message.equals("2")) {
 						for(int i=0;i < 6;i++) {
 							transactionType("receive-send");
 						}
-						break;
 					}
 					else if(message.equals("1")) {
 						for(int i=0;i < 2;i++) {
 							transactionType("receive-send");
-							
 						}
-						break;
 					}
 					else {
 						transactionType("receive");
 					}
-				}while(true);
-			}
-			transactionType("receive");
+				}
+				transactionType("receive");
+				transactionType("read");
+				if(message.equals("1")) {
+					break;
+				}
+				else {
+					continue;
+				}
+			}while(true);
 			
 			do {
 				transactionType("receive-send");
@@ -88,16 +91,22 @@ public class Requester{
 						transactionType("receive");
 					}
 				}
-				else if(message.equals("6")) {
+				else if(message.equals("6")) { 
+					transactionType("receive");
+				}
+				else if(message.equals("7")) {
 					transactionType("receive-send");
 					transactionType("receive");
+				}
+				else if(message.equals("8")) {
+					transactionType("receive");
+					break;
 				}
 				else {
 					transactionType("receive");
 				}
 				
 			}while(true);
-			
 			
 		} catch(UnknownHostException unknownHost){
 			System.err.println("You are trying to connect to an unknown host!");

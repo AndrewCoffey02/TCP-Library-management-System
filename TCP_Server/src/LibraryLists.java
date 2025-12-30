@@ -80,7 +80,7 @@ public class LibraryLists {
     	//Create and add to List of users
     	User user = new User(name, userId, email, password, dept, roletype);
     	users.add(user);
-    	return "You have succesfully been registered!";
+    	return "1";
     }
 
     //Print all users.
@@ -142,10 +142,10 @@ public class LibraryLists {
     }
     
     // assign a book to a random librarian.
-    public String assignBorrowRequest(String recordId) {
+    public String assignBorrowRequest(String recordId, String userId) {
     	Book currentBook = null;
-    	String id = findLibrarian();
-    	if (id.equals("None")) { //Check for any librarians on the system.
+    	String libId = findLibrarian();
+    	if (libId.equals("None")) { //Check for any librarians on the system.
     		return "Sorry, there are no librarians on the system.";
     	}
     	
@@ -168,7 +168,7 @@ public class LibraryLists {
     	}
 		// Verify successful request.
     	int index = books.indexOf(currentBook);
-		books.set(index, currentBook.assignBookRequest(id));
+    	books.set(index, currentBook.assignBookRequest(libId, userId));
 		return "Book has been requested!";
     }
     
@@ -177,10 +177,13 @@ public class LibraryLists {
     	StringBuilder sb = new StringBuilder("\n===== Books assigned to you =====\n");
     	
     	for(Book book : books) {
-    		if(book.librarianId().equals(id)) {
+    		if(book.userId().equals(id)) {
     			sb.append(book.printBook()).append("\n");
     		}
-    		else if(book.userId().equals(id)) {
+    		if(book.librarianId() == null) {
+    			continue;
+    		}
+    		else if(book.librarianId().equals(id)) {
     			sb.append(book.printBook()).append("\n");
     		}
     	}
@@ -258,7 +261,7 @@ public class LibraryLists {
     	}
     	if(currentBook.status() == RecordStatus.REQUESTED) {  // Change to borrowed
 			int index = books.indexOf(currentBook);
-			books.set(index, currentBook.bookBorrow(userId));
+			books.set(index, currentBook.bookBorrow());
 		}
     	if(currentBook.status() == RecordStatus.BORROWED) {  // Search for librarian id then change to returned.
     		String libID = findLibrarian();
