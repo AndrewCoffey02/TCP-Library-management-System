@@ -62,7 +62,9 @@ public record Book(
     		);	
     	}
 	
-	public Book bookBorrow() {
+	public Book bookBorrow(
+			String userId
+			) {
 		return new Book(
 				name,
 				RecordType.BORROW_REQUEST, 
@@ -70,7 +72,7 @@ public record Book(
 				date, 
 				userId,
 				RecordStatus.BORROWED, 
-				null
+				librarianId
 		);
 	}
 	public Book bookReturn(

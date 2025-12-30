@@ -125,10 +125,7 @@ public class Requester{
 	
 	public void processRequest() {
 		transactionType("receive-send");
-		if(message.equals("1")) {
-			transactionType("receive-send");
-		}
-		else if(message.equals("yes")) {
+		if(message.equals("yes")) {
 			transactionType("receive-send");
 		}
 		else {

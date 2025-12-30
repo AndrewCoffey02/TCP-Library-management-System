@@ -245,10 +245,10 @@ public class ServerThread extends Thread {
 				String ID = message;
 				
 				if(role == UserRole.STUDENT) {
-					res = lists.processStudent(message);
+					res = lists.processStudent(message, UserID);
 				}
 				else if(role == UserRole.LIBRARIAN) {
-					res = lists.processLibrarian(message);
+					res = lists.processLibrarian(message, UserID);
 				}
 				
 				if(res.equals("1")) {
@@ -272,7 +272,7 @@ public class ServerThread extends Thread {
 				}
 				//Verify book process and return to home.
 				if(message.equals("yes")) {
-					lists.authoriseProcess(ID);
+					lists.authoriseProcess(ID, UserID);
 					out.writeObject("Book has been processed.");
 				}
 				else {
